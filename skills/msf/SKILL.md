@@ -1,9 +1,9 @@
 ---
 name: msf
-version: 4.1.0
+version: 4.2.0
 description: |
-  医学社会组织发展研究工场（Medical Society Development Research Foundry） v4.1 — 科学研究方法驱动。5-Agent独立子代理(sessions_spawn)+Stage Contract+Evidence Ledger+独立审稿。
-  Use when: 医学研究,系统评价,Meta分析,临床试验,证据质量,团标,团体标准,发展规划,技术路线图,学会,干细胞,外泌体,器官医学,AI医疗
+  医学社会组织发展研究工场 v4.2 — OPL stage-led 架构注入。Stage as delivery unit + Stage Receipts + Attempt Ledger + Per-Stage Quality Gates + Review Ledger + Authority Boundary。设计来源：gaofeng21cn/one-person-lab(OPL)+med-autoscience(MAS)。
+  Use when: 医学研究,系统评价,证据质量,团标,技术路线图,学会,干细胞,AI医疗
   NOT for: 基金申请,合规审查,巡视纪检。
 metadata:
   openclaw:
@@ -12,77 +12,145 @@ metadata:
       sessions: sessions_spawn 可用
 ---
 
-# MSF v4.1 ⚒️
+# MSF v4.2 ⚒️ — OPL 注入版
 
-> 5-Agent 独立子代理编排器。v4.1 补齐全部 Agent prompt 文件。
+> 设计来源：gaofeng21cn/one-person-lab (OPL stage-led framework) + med-autoscience (MAS)
+> **v4.2 核心升级：吸收 OPL 六大模式 —— Stage Receipts / Attempt Ledger / Per-Stage Gates / Review Ledger / Authority Boundary / Recovery**
 
-## 5-Agent 独立子代理管线
+## OPL 核心原则（已吸收）
 
-```
-Phase 1: Stage Contract — 主会话 freeze
-Phase 2: Scout — sessions_spawn Agent 1
-Phase 3: Analyze — sessions_spawn Agent 2 (PRISMA+证据映射)
-Phase 4: Draft — sessions_spawn Agent 3
-Phase 5: Review — sessions_spawn Agent 4 (⚠️ 独立审稿, 硬门禁)
-Phase 6: Revise — sessions_spawn Agent 5
-Phase 7: Deliver — 主会话检查 review_score
-```
+| OPL 模式 | MSF 实现 |
+|:---------|:---------|
+| **Stage as delivery unit** | 每个 Agent 是独立 stage，有自己的 goal/input/output/gate/receipt |
+| **Stage Receipts** | 每个 Agent 输出含 quality 自检 + handoff 签字 |
+| **Attempt Ledger** | 记录每阶段重试次数、改进内容、历史分数 |
+| **Per-Stage Quality Gates** | Scout→完整性检查 / Analyze→PRISMA完整 + A≥2 / Draft→引用全覆盖 / Review→独立审计 |
+| **Review Ledger** | 独立于 Evidence Ledger 的审稿决策轨迹 |
+| **Authority Boundary** | AI: Scout/Analyze/Draft/Revise | Human: 最终结论/医学判断/对外发布 |
+| **Recovery** | 任一 stage FAIL → 标记原因 → 退回上一 stage 重试（保留 attempt 历史） |
 
-**Phase 5 是硬门禁。没有 review_score 不允许交付。**
-
-## 编排流程
+## 5-Agent Stage 管线 (v4.2)
 
 ```
 用户问题
-  ├─ Phase 1: 主会话冻结 Stage Contract
-  ├─ Phase 2: spawn Agent 1 (scout)
-  ├─ Phase 3: spawn Agent 2 (analyze)
-  ├─ Phase 4: spawn Agent 3 (draft)
-  ├─ Phase 5: spawn Agent 4 (review) ← 独立审计
-  ├─ Gate: ≥80 → PASS, <80 → Phase 6
-  └─ Phase 6: spawn Agent 5 (revise) → 交付
+  │
+  ├─ Stage 0: 主会话 freeze Stage Contract (不可修改)
+  │     → output: stage_contract.yaml
+  │
+  ├─ Stage 1: sessions_spawn Agent 1 (Scout) 
+  │     → input: stage_contract
+  │     → output: scout_results.json + receipt (completeness ≥ 80%)
+  │     → gate: sources ≥ 10, databases ≥ 3, A-strong ≥ 2
+  │
+  ├─ Stage 2: sessions_spawn Agent 2 (Analyze)
+  │     → input: scout_results + stage_contract
+  │     → output: evidence_ledger.json + PRISMA_flow.json + receipt
+  │     → gate: PRISMA 完整, A-strong ≥ 2, counter_evidence 已搜索
+  │
+  ├─ Stage 3: sessions_spawn Agent 3 (Draft)
+  │     → input: evidence_ledger + PRISMA_flow + stage_contract
+  │     → output: draft_report.md + receipt (citation coverage ≥ 95%)
+  │     → gate: 每条 claim 有 source, 局限性已声明
+  │
+  ├─ Stage 4: sessions_spawn Agent 4 (Review) ⚠️ 独立审计, 硬门禁
+  │     → input: 原始 contract + scout原始数据 + evidence_ledger + draft_report（只读）
+  │     → output: review_ledger.json + quality_score + revision_plan
+  │     → gate: score ≥ 80 → PASS | 60-79 → Stage 5 | <60 → REJECT/退回 Stage 3
+  │     → ⛔ 不继承任何上游 Agent 上下文
+  │
+  ├─ Stage 5: sessions_spawn Agent 5 (Revise)
+  │     → input: draft_report + review_ledger
+  │     → output: final_report.md + revision_log.md
+  │     → gate: P0 全修复, P1 ≥ 80%
+  │
+  └─ Stage 6: 主会话 Deliver
+        → gate: review_score ≥ 80, P0=0, revision_applied ≥ 80%
+        → 检查 authority_boundary: 最终结论标记 ⏸️ HUMAN_APPROVAL
 ```
 
-## 子代理 prompt 文件
+## Stage Receipt 格式（每个 Agent 必须输出）
 
-| Agent | 文件 | 职责 |
-|:-----:|:-----|:-----|
-| 1 | agent1-scout.md | 文献/政策采集 |
-| 2 | agent2-analyze.md | 证据映射+PRISMA |
-| 3 | agent3-draft.md | 撰写初稿 |
-| 4 | agent4-review.md | 独立审稿员 ⚠️ |
-| 5 | agent5-revise.md | 修订 |
-
-## 核心方法论（保留）
-
-### Stage Contract
-
-每次研究前冻结研究契络，PICO定义、搜索策略、质量门槛不可修改。
-
-### PRISMA 流程
-
-```
-初始搜索 → 去重 → 标题筛选 → 摘要筛选 → 全文筛选 → 纳入
-每步记录数量，搜索策略可复现。
+```json
+{
+  "stage": "scout/analyze/draft/review/revise",
+  "receipt_id": "MSF-YYYYMMDD-{stage}-001",
+  "attempt_number": 1,
+  "quality_self_check": {
+    "completeness": 0-100,
+    "gate_checks": ["gate1: PASS/FAIL", "gate2: PASS/FAIL"],
+    "issues_found": ["问题"],
+    "confidence": 0-100
+  },
+  "handoff_to": "next_stage_name",
+  "handoff_ready": true/false,
+  "timestamp": "ISO"
+}
 ```
 
-### Evidence Ledger
+## Attempt Ledger 格式（主会话维护）
 
-每条主张必须对应 ≥1 条 source，标注证据等级（A-strong/A-weak/B-strong/B-weak/C）。
+```json
+{
+  "task_id": "MSF-YYYYMMDD-NNN",
+  "stages": {
+    "scout": {"attempts": 1, "best_score": 85, "status": "PASS"},
+    "analyze": {"attempts": 2, "best_score": 72, "status": "PASS"},
+    "draft": {"attempts": 1, "best_score": 90, "status": "PASS"},
+    "review": {"attempts": 1, "best_score": 82, "status": "PASS"},
+    "revise": {"attempts": 1, "best_score": null, "status": "PASS"}
+  },
+  "total_attempts": 6,
+  "final_score": 82,
+  "delivery_status": "PASS"
+}
+```
 
-### 四模块
+## Authority Boundary
 
-| 模块 | 做什么 |
-|:-----|:------|
-| SF-Standards | 团标全周期 |
-| SF-Intel | 战略情报 |
-| SF-Audit | 落地追踪 |
+```yaml
+ai_authority:
+  - 文献采集与来源筛选
+  - 证据分级与映射
+  - PRISMA 流程生成
+  - 初稿撰写与格式化
+  - 审稿与质量评分
+  - 修订与格式修正
+
+human_authority:
+  - 最终结论确认
+  - 医学/战略决策
+  - 对外发布
+  - 临床建议
+  - 伦理判断
+  - ⏸️ STOP_FOR_HUMAN 标记的所有内容
+```
+
+## Recovery 规则
+
+```
+Stage N 返回 receipt.handoff_ready = false:
+  → 主会话检查 issue 类型
+  → 技术性失败（超时/工具错误）→ 直接重试（attempt+1）
+  → 质量失败（gate 未过）→ 退回 Stage N-1，传入 issue list
+  → 同一 stage 最多重试 3 次 → 超过则标记 HUMAN_ESCALATION
+```
+
+## 子代理文件
+
+| Agent | 文件 | OPL 角色 |
+|:-----:|:-----|:---------|
+| 1 | agent1-scout.md | Stage 1: Scout |
+| 2 | agent2-analyze.md | Stage 2: Analyze |
+| 3 | agent3-draft.md | Stage 3: Draft |
+| 4 | agent4-review.md | Stage 4: Independent Reviewer ⚠️ |
+| 5 | agent5-revise.md | Stage 5: Revise |
 
 ## LEARNED PATTERNS
 
-### v4.1: 纸面造假修复 (2026-05-21)
-v4.0 的 Agent 架构只存在于描述文字。plugins/scene/msf/ 目录不存在，无子代理 prompt 文件。
-v4.1 补齐全部 5 个 Agent prompt 文件 + 编排流程。
+### v4.2: OPL stage-led 注入 (2026-05-21)
+来源：gaofeng21cn/one-person-lab + med-autoscience
+吸收：Stage Receipts / Attempt Ledger / Per-Stage Gates / Review Ledger / Authority Boundary / Recovery
+核心原则：AI-first quality gates require separation of labor — a single agent cannot execute and then review itself (MAS invariant)
 
-### 审稿人分离
-自己写的不能自己审。Review Agent 独立会话，不继承 Draft 上下文。
+### v4.1: 纸面造假修复 (2026-05-21)
+v4.0 的 Agent 架构只存在于描述文字。补齐全 5 个 Agent prompt 文件。

@@ -4,7 +4,7 @@
 
 | Agent | Type | Status | Last Active | Health |
 |:------|:----:|:------:|:----------|:------:|
-| discipline-inspect ⚔️ | skill | 🟢 | today | v2.2.0 — 4-Agent独立子代理 + ripgrep 搜索(3.9ms) |
+| discipline-inspect ⚔️ | skill | 🟢 | today | v2.2.1 — 4-Agent独立子代理 + 任务分流规则 + 降级铁律 |
 | solo-file-transfer 📤 | skill | 🟢 | today | docx→md + IMA上传 |
 | MSF ⚒️ | skill | 🟢 | today | v2.0 + 2 report |
 | babata-browser 🦞 | skill | 🟢 | today | CCDI验证 |

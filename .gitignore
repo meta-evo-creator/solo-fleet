@@ -41,6 +41,13 @@ memory/inspection-drafts/
 # 工作产出
 output/
 
+# 系统配置（含个人信息）
+.sop/
+BOOT.md
+HEARTBEAT.md
+DREAMS.md
+SUIT-DISPATCH.md
+
 # 系统/工具
 node_modules/
 .tmp/

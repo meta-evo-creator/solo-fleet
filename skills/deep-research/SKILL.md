@@ -4,7 +4,7 @@ version: 3.2.0
 description: |
   深度调研技能 v3.2 — File-based Handoff + Merge Agent + Stage State。Scout(3路并行)→Merge→Analyze(2路并行)→Draft→Review→Revise。设计来源：fainir/most-capable-agent-system-prompt(handoff.md)+GPT Researcher(planner/executor/publisher)+Magentic(task ledger)。
   Use when: 深度调研,技术评估,行业分析,多源交叉,L3任务
-  NOT for: 简单搜索, 纪检巡视(use discipline-inspect)
+  NOT for: 简单搜索, 纪检分析(L2任务请使用对应技能)
 metadata:
   openclaw:
     emoji: 🔍

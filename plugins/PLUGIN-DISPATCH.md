@@ -52,11 +52,11 @@
 插件输出 JSON 中含 `trigger_next` 字段 → 内核自动 Dispatch 下一个插件。
 
 ```
-插件A 输出: { result, quality, trigger_next: "discipline-inspect" }
-  → 内核 Gate 检查 quality 达标 → Dispatch discipline-inspect
+插件A 输出: { result, quality, trigger_next: "政法分析" }
+  → 内核 Gate 检查 quality 达标 → Dispatch 政法分析
 ```
 
-典型链: deep-research → discipline-inspect（政策评估）
+典型链: deep-research → 政法评估（政策评估）
 编排器: policy-eval 插件（L3/priority 4）
 
 ## 指纹格式

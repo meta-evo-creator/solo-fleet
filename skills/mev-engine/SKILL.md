@@ -75,7 +75,7 @@ tavily__tavily_search → web_fetch → babata-browser → 标注「不可达」
 ### ③ Think — 分析加工
 
 视任务复杂度，激活对应插件：
-- 纪检法规 → `discipline-inspect`（4-Agent编排 + RAG）
+- 纪检法规 → 对应纪检分析技能（多Agent编排）
 - 医学研究 → `med-research`（Scout→Draft→Review）
 - 深度调研 → `deep-research`（L3专用）
 

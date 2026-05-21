@@ -4,7 +4,7 @@ version: 4.2.0
 description: |
   医学社会组织发展研究工场 v4.2 — OPL stage-led 架构注入。Stage as delivery unit + Stage Receipts + Attempt Ledger + Per-Stage Quality Gates + Review Ledger + Authority Boundary。设计来源：gaofeng21cn/one-person-lab(OPL)+med-autoscience(MAS)。
   Use when: 医学研究,系统评价,证据质量,团标,技术路线图,学会,干细胞,AI医疗
-  NOT for: 基金申请,合规审查,巡视纪检。
+  NOT for: 基金申请,合规审查,纪检分析。
 metadata:
   openclaw:
     emoji: ⚒️

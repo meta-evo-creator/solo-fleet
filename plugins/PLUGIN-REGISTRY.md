@@ -1,11 +1,12 @@
-﻿# PLUGIN-REGISTRY.md
+﻿# PLUGIN-REGISTRY.md — 技能索引表
 
-> SOLO Fleet Registry — Plugin注册表 + OpenClaw Skills索引。
-> 新能力 → scene/ → 触发≥3次 → active/ → 30天无触发 → dormant/ → 删除
+> SOLO Fleet Registry — OpenClaw Skills 索引表。
+> 技能统一存放于 `skills/` 目录，由 OpenClaw 框架通过 SKILL.md 的 `description` 关键词自动发现激活。
+> 以下为当前所有已注册技能的触发词和架构汇总。
 
 ---
 
-## Active（常加载）
+## Framework Plugins（OpenClaw 框架级）
 
 | 插件 | priority | 触发条件 | 最后触发 |
 |:-----|:--------:|:---------|:--------:|

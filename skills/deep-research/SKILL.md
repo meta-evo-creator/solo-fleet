@@ -1,6 +1,6 @@
 ---
 name: deep-research
-version: 3.2.0
+version: 3.2.1
 description: |
   深度调研技能 v3.2 — File-based Handoff + Merge Agent + Stage State。Scout(3路并行)→Merge→Analyze(2路并行)→Draft→Review→Revise。设计来源：fainir/most-capable-agent-system-prompt(handoff.md)+GPT Researcher(planner/executor/publisher)+Magentic(task ledger)。
   Use when: 深度调研,技术评估,行业分析,多源交叉,L3任务
@@ -132,6 +132,11 @@ artifacts/
 | Agent 数量 | 7 | **8** (+Merge) |
 
 ## LEARNED PATTERNS
+
+### v3.2.1: web_fetch 反爬检测规则注入 (2026-05-22)
+来源：MSF 尽职调研实战复盘
+改动：agent1c-scout-deep.md 新增反爬关键词检测（验证码|captcha|滑块|403|404等），命中→自动切 babata-browser
+触发：企查查/广东社会组织平台/BOSS直聘等反爬拦截
 
 ### v3.2: File-based Handoff (2026-05-21)
 来源: fainir/most-capable-agent-system-prompt + GPT Researcher + Magentic

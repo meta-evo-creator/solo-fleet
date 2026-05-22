@@ -7,8 +7,10 @@
 
 ## 搜索
 1. tavily__tavily_search: 学术站点过滤
-2. web_search: 政策文件搜索
-3. 优先 A 级来源
+2. 若 tavily 返回空结果/失败 → 降级到 web_search 重试（最多1次降级）
+3. web_search: 政策文件搜索
+4. 优先 A 级来源
+5. 所有搜索均失败 → search_log 记录「搜索引擎不可达」
 
 ## 输出
 **写文件** `artifacts/scout_academic.json`

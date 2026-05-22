@@ -1,4 +1,4 @@
-# PLUGIN-REGISTRY.md
+﻿# PLUGIN-REGISTRY.md
 
 > SOLO Fleet Registry — Plugin注册表 + OpenClaw Skills索引。
 > 新能力 → scene/ → 触发≥3次 → active/ → 30天无触发 → dormant/ → 删除
@@ -23,9 +23,8 @@
 
 | 技能 | emoji | 触发词 | 架构 |
 |:-----|:-----:|:------|:-----|
-| discipline-inspect | ⚔️ | 巡视,纪检,监察,纪律,党纪,问责,整改,监察建议,九项准则 | 4-Agent子代理(sessions_spawn) v2.2.1 |
-| deep-research | 🔍 | 深度调研,技术评估,行业分析,多源交叉,L3任务 | 7-Agent子代理(sessions_spawn) v3.1 |
-| MSF | ⚒️ | 医学研究,系统评价,Meta分析,证据质量,团标 | 5-Agent子代理(sessions_spawn) v4.1 |
+| deep-research | 🔍 | 深度调研,技术评估,行业分析,多源交叉,L3任务 | 8-Agent子代理(sessions_spawn) v3.2.1 |
+| MSF | ⚒️ | 医学研究,系统评价,Meta分析,证据质量,团标 | 5-Agent子代理(sessions_spawn) v4.2.2 |
 | babata-browser | 🦞 | 政府网站,JS渲染,截图,web_fetch失败 | CloakBrowser v3.1 |
 | babata-superocr | 📝 | 手写体识别,PDF扫描件,OCR | PaddleOCR+RapidOCR |
 | solo-file-transfer | 📤 | Word转Markdown,上传IMA,文件上传知识库 | docx_to_md + ima_api 二合一 |
@@ -38,4 +37,4 @@
 2. OpenClaw skills 由 `<description>` 关键词自动激活（框架级强制）
 3. 内部插件通过 keywords 匹配 + `read` 加载
 4. force_activate=true → 跳过匹配
-5. conflict: discipline-inspect(p6) ∩ MSF(p5) → discipline-inspect 优先
+5. conflict resolution: MSF(p5) vs high-priority skills → 按实际触发场景决策

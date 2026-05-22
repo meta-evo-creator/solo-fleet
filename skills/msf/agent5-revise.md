@@ -17,6 +17,7 @@
 - [ ] P0 = 0
 - [ ] P1 修复 ≥ 80%
 - [ ] 修订日志完整
+- [ ] 修订后自评: 是否需要二次Review（original_score < 80 → 是）
 
 ## 输出
 
@@ -39,7 +40,7 @@
   "stage": "revise",
   "receipt_id": "MSF-{date}-revise-001",
   "quality_self_check": {"completeness":0-100,"gates":{"P0_zero":"PASS/FAIL","P1_coverage":"≥80%"},"issues":[],"confidence":0-100},
-  "handoff_to": "deliver",
+  "handoff_to": "deliver 或 re-review",  // original_score < 80 → re-review
   "handoff_ready": true/false
 }
 ```

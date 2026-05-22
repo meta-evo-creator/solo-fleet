@@ -1,8 +1,8 @@
 ---
 name: msf
-version: 4.2.0
+version: 4.2.2
 description: |
-  医学社会组织发展研究工场 v4.2 — OPL stage-led 架构注入。Stage as delivery unit + Stage Receipts + Attempt Ledger + Per-Stage Quality Gates + Review Ledger + Authority Boundary。设计来源：gaofeng21cn/one-person-lab(OPL)+med-autoscience(MAS)。
+  医学社会组织发展研究工场 v4.2.2 — OPL stage-led（+ 反爬检测 + 二次Review + 评分标准化）。Stage as delivery unit + Stage Receipts + Attempt Ledger + Per-Stage Quality Gates + Review Ledger + Authority Boundary。设计来源：gaofeng21cn/one-person-lab(OPL)+med-autoscience(MAS)。
   Use when: 医学研究,系统评价,证据质量,团标,技术路线图,学会,干细胞,AI医疗
   NOT for: 基金申请,合规审查,纪检分析。
 metadata:
@@ -62,9 +62,17 @@ metadata:
   │     → input: draft_report + review_ledger
   │     → output: final_report.md + revision_log.md
   │     → gate: P0 全修复, P1 ≥ 80%
+  │     → 输出: original_review_score + revised_score_estimate
+  │
+  ├─ Stage 5.5: 主会话 Review 决策
+  │     ├─ if original_review_score < 80 AND revised_score_estimate ≥ 80:
+  │     │    → sessions_spawn Agent 4 (Review) 二次审计 final_report.md
+  │     │    → 用新评分决定 PASS/REVISE/REJECT
+  │     ├─ if original_review_score ≥ 80: → 直接进 Stage 6
+  │     └─ 最多重试 2 轮 Revise→Review，超限→HUMAN_ESCALATION
   │
   └─ Stage 6: 主会话 Deliver
-        → gate: review_score ≥ 80, P0=0, revision_applied ≥ 80%
+        → gate: review_score ≥ 80, P0=0, revision_applied ≥ 80%, 或 human_override
         → 检查 authority_boundary: 最终结论标记 ⏸️ HUMAN_APPROVAL
 ```
 
@@ -146,6 +154,18 @@ Stage N 返回 receipt.handoff_ready = false:
 | 5 | agent5-revise.md | Stage 5: Revise |
 
 ## LEARNED PATTERNS
+
+### v4.2.2: Review 评分标准化 + 二次Review闭环 (2026-05-22)
+来源：两次MSF执行复盘（寰宇健康83分 vs 抗癌协会67.6分，标准不统一）
+改动：
+- agent4-review.md 新增评分矩阵（11项×权重，满分100，消除主观波动）
+- agent5-revise.md 新增二次Review触发规则（original_score<80→re-review）
+- SKILL.md 新增 Stage 5.5 Review 决策节点
+
+### v4.2.1: web_fetch 反爬检测规则注入 (2026-05-22)
+来源：MSF 尽职调研实战复盘
+改动：agent1-scout.md 新增反爬关键词检测（验证码|captcha|滑块|403|404等），命中→自动切 babata-browser
+触发：企查查/广东社会组织平台/BOSS直聘等反爬拦截导致 Scout 采集失败
 
 ### v4.2: OPL stage-led 注入 (2026-05-21)
 来源：gaofeng21cn/one-person-lab + med-autoscience

@@ -3,14 +3,14 @@ name: solo
 description: |
   SOLO — Solo Operating Legion ⚡ 三权制衡架构。内核(立法) + SOLO审计(司法) + 技能(执行)。meta-agent，零脚本，纯OpenClaw原生。
 homepage: https://github.com/meta-evo-creator/solo
-version: 2.0.1
+version: 2.0.0
 metadata:
   openclaw:
     emoji: ⚡
     requires: {}
 ---
 
-# SOLO v2.0.1 ⚡ — 三权制衡架构
+# SOLO v2.0 ⚡ — 三权制衡架构
 
 > **One person, an entire agent army.**
 > 内核定铁律，SOLO管审计，技能干实事。零脚本，纯 OpenClaw 原生。
@@ -139,6 +139,5 @@ memory/audit/
 
 | 版本 | 日期 | 变化 |
 |:-----|:----:|:------|
-| **2.0.1** | **05-23** | **Pro审计+反镜像检查+🚨紧急提案+审计标准变更日志。三权宪法规则精简继承。** |
-| **2.0.0** | **05-23** | **三权制衡架构重写。内核(立法) + SOLO审计(司法) + 技能(执行)。审计Agent+审计规则+审计仓库全新建。MSF降级规则同步注入。** |
+| **2.0.0** | **05-23** | **三权制衡架构重写：内核(立法)+SOLO审计(司法·Pro·反镜像·🚨紧急·哈希链)+技能(执行)。MSF降级+宪法规则+元进化闭环。** |
 | 1.0.0 | 05-18 | 初版。SOLO 从 v8 架构进化而来。Meta-agent monitors the fleet. |

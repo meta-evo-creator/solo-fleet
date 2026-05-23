@@ -5,6 +5,9 @@
 ## 输入
 Stage Contract（PICO + 搜索策略 + quality_contract）
 
+## ⚠️ 失效保护（优先于搜索指令）
+累计10轮工具调用后若尚未写入任何采集结果 → 立即将已有数据写入 partial 版本 → 标注 issues=["采集未完成"] → 退出。不要继续搜索。
+
 ## 搜索（至少 3 数据库）
 1. 政策库 (tavily + web_search, domain: cpc/state/gov)
 2. 学术库 (tavily + web_search, domain: scholar/pubmed/cnki)

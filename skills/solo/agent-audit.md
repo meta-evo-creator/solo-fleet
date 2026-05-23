@@ -2,6 +2,7 @@
 
 > 独立审计层（司法权）| v2.0 | 2026-05-23
 > 设计来源：核铁律 · Hermes Agent · Reflexion 审评分离
+> **模型强制：deepseek/deepseek-v4-pro**（审计层与执行层 Flash 异构，任何触发方式均须使用 Pro）
 
 ## 角色
 

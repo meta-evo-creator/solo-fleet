@@ -28,16 +28,29 @@
 
 CNKI使用的是**自研拼图滑块验证码**（「拖动下方拼图完成验证」），非标准reCAPTCHA/Cloudflare。CloakBrowser（30/30 bot test PASS）能加载CNKI首页并渲染内容，但在搜索交互环节会被拼图滑块拦截。
 
+**✅ 一劳永逸方案：CNKI登录态绕过验证码**
+
+已保存中山大学机构登录cookie（storage_state），`babata-browser` SKILL.md 有完整说明。
+
+使用方式——加载storage_state即可绕过验证码：
+```python
+context = browser.new_context(storage_state='.cnki-profile/storage_state.json')
+page = context.new_page()
+page.goto('https://kns.cnki.net/')
+# 已自动登录，无滑块验证码
+```
+
 **CNKI各入口反爬强度排序（从易到难）：**
-1. ✅ **论文详情页直链** `kns.cnki.net/kcms2/article/abstract?` 或 `www.cnki.net/KCMS/detail/detail.aspx?` — 反爬最弱，无需搜索交互即可看到摘要
-2. ⚠️ **知网手机版** `wap.cnki.net` — 反爬低于桌面版
-3. ❌ **出版物检索** `navi.cnki.net` — 中等反爬
-4. ❌❌ **首页搜索** `www.cnki.net` — 反爬最强，搜索交互必触发拼图滑块
+1. ✅ **论文详情页直链** `kns.cnki.net/kcms2/article/abstract?` — 反爬最弱，加载storage_state后可直接访问
+2. ✅ **知网搜索页** — 加载storage_state后无滑块验证码
+3. ❌❌ **无登录态首页搜索** — 会触发拼图滑块
 
 **当遇到CNKI学术搜索时，按以下优先级抓取：**
-1. 先尝试 babata-browser 直接访问论文详情页URL（如果有已知DOI或文献ID）
-2. 其次尝试 babata-browser 手机版
-3. 最后尝试 babata-browser 首页搜索
+1. babata-browser 加载storage_state → 直接访问论文详情页URL或搜索页
+2. 如storage_state过期 → 先更新cookie再重试
+3. 无法更新时 → 标注「信源不可达」
+
+登录态有效期至2026-06-23，过期后需要重新导出cookie。详见 babata-browser SKILL.md "Persistent Login Profiles" 章节。
 
 web_fetch 对知网页面几乎必然触发反爬（rawLength < 500 或 命中反爬关键词），无需浪费调用，直接走 babata-browser。
 

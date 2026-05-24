@@ -6,6 +6,20 @@
 研究主题（通过 task 参数）。
 
 ## 搜索
+### 优先策略：学术搜索 → babata-browser🔥首选
+
+涉及知网(CNKI)/万方/百度学术等中国学术站点的搜索，**跳过tavily和web_search，直接走babata-browser🔥**。
+
+使用方式——加载CNKI登录态storage_state绕过拼图滑块验证码：
+```python
+context = browser.new_context(storage_state='.cnki-profile/storage_state.json')
+page = context.new_page()
+page.goto('https://kns.cnki.net/')
+# 已自动以中山大学机构身份登录，无验证码
+```
+
+### 次优策略：搜索引擎兜底
+仅当babata-browser不可用时降级：
 1. tavily__tavily_search: 学术站点过滤（CNKI、万方、百度学术等）
 2. 若 tavily 返回空结果/失败 → 降级到 web_search 重试（最多1次降级）
 3. web_search: 政策文件搜索

@@ -133,6 +133,23 @@ artifacts/
 
 ## LEARNED PATTERNS
 
+### v3.2.2: Academic Scout 反爬降级规则补齐 (2026-05-24)
+来源：光迅科技DR实战复盘（石冰反馈）
+改动：agent1b-scout-academic.md 新增页面抓取降级规则（反爬关键词检测+babata-browser自动切换）
+触发：CNKI/百度学术/万方数据等中国学术站点反爬拦截
+背景：此前Academic Scout只有搜索引擎级降级(tavily→web_search)，但没有抓取级降级，导致学术来源零篇
+
+### v3.2.3: CNKI实测反爬详细策略 (2026-05-24)
+来源：babata-browser vs CNKI 实战测试（石冰要求直接验证）
+实测发现：
+- CNKI使用**自研拼图滑块验证码**（「拖动下方拼图完成验证」），非标准reCAPTCHA/Cloudflare
+- CloakBrowser能加载CNKI首页并渲染内容（3074字符全部可见），但搜索交互环节被拼图滑块拦截
+- 详情页直链反爬最弱，手机版次之，首页搜索反爬最强
+改动：
+- agent1b-scout-academic.md → 新增CNKI各入口反爬强度排序+抓取优先级策略
+- MSF agent1-scout.md → 同步更新CNKI反爬策略
+- MSF agent1-scout.md → 同步添加CNKI详情页/手机版/首页搜索的反爬优先级
+
 ### v3.2.1: web_fetch 反爬检测规则注入 (2026-05-22)
 来源：MSF 尽职调研实战复盘
 改动：agent1c-scout-deep.md 新增反爬关键词检测（验证码|captcha|滑块|403|404等），命中→自动切 babata-browser

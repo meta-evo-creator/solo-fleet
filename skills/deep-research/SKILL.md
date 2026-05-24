@@ -133,6 +133,17 @@ artifacts/
 
 ## LEARNED PATTERNS
 
+### v4.0: babata-browser v4.0 — Persistent Login + 学术搜索首选 (2026-05-24)
+来源：CNKI反爬全链路实战（石冰提供中山大学登录cookie）
+改动：
+- babata-browser SKILL.md → v4.0。新增Persistent Login Profiles章节（CNKI storage_state）
+- agent1b-scout-academic.md → 搜索策略重写：babata-browser加载storage_state优先，搜索引擎兜底
+- TOOLS.md → 新增学术搜索规则：涉及知网/万方/百度学术→跳过tavily/web_fetch，直接走babata-browser🔥
+- MSF agent1-scout.md → 学术库CNKI优先babata-browser
+- PLUGIN-REGISTRY.md → 版本号v3.1→v4.0，触发词新增「学术搜索」
+实测：加载中山大学机构登录cookie后，CNKI首页/详情页/搜索页均绕过拼图滑块验证码
+登录态有效期至2026-06-23，cron已设提前提醒
+
 ### v3.2.2: Academic Scout 反爬降级规则补齐 (2026-05-24)
 来源：光迅科技DR实战复盘（石冰反馈）
 改动：agent1b-scout-academic.md 新增页面抓取降级规则（反爬关键词检测+babata-browser自动切换）

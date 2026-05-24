@@ -10,7 +10,7 @@ Stage Contract（PICO + 搜索策略 + quality_contract）
 
 ## 搜索（至少 3 数据库）
 1. 政策库 (tavily + web_search, domain: cpc/state/gov)
-2. 学术库 (tavily + web_search, domain: scholar/pubmed/cnki)
+2. 学术库 (tavily + web_search, domain: scholar/pubmed/cnki) → **CNKI优先走 babata-browser**（加载storage_state绕过验证码，详见babata-browser SKILL.md Persistent Login Profiles）
 3. 产业库 (web_search, 行业报告)
 4. 国际库 (tavily, 国际对标)
 

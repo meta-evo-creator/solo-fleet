@@ -26,7 +26,8 @@
 |:-----|:-----:|:------|:-----|
 | deep-research | 🔍 | 深度调研,技术评估,行业分析,多源交叉,L3任务 | 8-Agent子代理(sessions_spawn) v3.2.1 |
 | MSF | ⚒️ | 医学研究,系统评价,Meta分析,证据质量,团标 | 5-Agent子代理(sessions_spawn) v4.2.2 |
-| babata-browser | 🦞 | 政府网站,JS渲染,截图,web_fetch失败 | CloakBrowser v3.1 |
+| discipline-inspect | ⚔️ | 巡视,纪检,监察,党纪,问责,诫勉,四种形态,问题底稿 | 4-Agent子代理(sessions_spawn) v2.4.0 |
+| babata-browser | 🦞 | 学术搜索,政府网站,JS渲染,截图,web_fetch失败 | CloakBrowser v4.0 |
 | babata-superocr | 📝 | 手写体识别,PDF扫描件,OCR | PaddleOCR+RapidOCR |
 | solo-file-transfer | 📤 | Word转Markdown,上传IMA,文件上传知识库 | docx_to_md + ima_api 二合一 |
 

@@ -116,3 +116,51 @@
 | **P15** | 05-28 | 05-29 | ✅ **已验证有效** | AI医疗 checkpoint 05-29 PRESENT (1475B, full JSON, ima_code=0) |
 
 **BREAKTHROUGH:** CHG-003覆盖率 0.33(05-28) → 1.00(05-29)。首次实现3/3 cron checkpoint合规。CHG-005a (checkpoint迁移至报告中段) 打破NP-004假说。
+
+---
+
+## CHG 提案格式（version 2026-05-31）
+
+所有 agent 启动时 `read AUDIT_LEARNINGS.md`，需了解两类提案的格式。
+
+### 类型一：行为修正提案（solo-audit 产出）
+
+```markdown
+## CHG-XXX: [问题描述]
+
+**来源:** SOLO-AUDIT-YYYYMMDD-NNN
+**严重度:** P0 | P1 | P2
+**问题:** [一句话]
+**根因:** [为什么发生]
+**修复:** [怎么改·消路径优先]
+**范围:** [影响哪些文件/cron]
+**验证:** [怎么验证修好了]
+```
+
+### 类型二：文本优化提案（SkillOpt 离线训练产出）
+
+> 适用：DR / MSF / solo-audit 三个技能的 SKILL.md 自动优化。DI 除外。
+
+```markdown
+## CHG-XXX: [技能名] [agent名] 文本优化
+
+**来源:** SkillOpt 离线训练
+**验证结果:** best_skill.md Review 总分 XX/100 vs 原skill XX/100
+**严重度:** P2（仅当得分≥原版且石冰审批才生效）
+
+**Diff:**
+<<< OLD
+原 SKILL.md 对应段落
+>>>
+<<< NEW
+优化后段落
+>>>
+
+**验证证据:**
+- old win-rate: XX/100 (N runs)
+- new win-rate: XX/100 (N runs)
+
+**石冰审批:** [ ] 通过 [ ] 拒绝
+```
+
+两类提案的共同底线：**石冰审批通过前，任何修改不生效。铁律④权责。**

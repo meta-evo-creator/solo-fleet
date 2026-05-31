@@ -1,8 +1,8 @@
 ---
 name: deep-research
-version: 3.2.1
+version: 3.3.0
 description: |
-  深度调研技能 v3.2 — File-based Handoff + Merge Agent + Stage State。Scout(3路并行)→Merge→Analyze(2路并行)→Draft→Review→Revise。设计来源：fainir/most-capable-agent-system-prompt(handoff.md)+GPT Researcher(planner/executor/publisher)+Magentic(task ledger)。
+  深度调研技能 v3.3.0 — File-based Handoff + Merge Agent + Stage State + IMA Publish。Scout(3路并行)→Merge→Analyze(2路并行)→Draft→Review→Revise→Publish(ima-upload)。
   Use when: 深度调研,技术评估,行业分析,多源交叉,L3任务
   NOT for: 简单搜索, 纪检分析(L2任务请使用对应技能)
 metadata:
@@ -12,10 +12,10 @@ metadata:
       sessions: sessions_spawn 可用
 ---
 
-# Deep-Research v3.2 🔍
+# Deep-Research v3.3 🔍
 
-> 8-Agent File-based Handoff Pipeline。不再通过 task 参数传递数据——Agent 读写 `artifacts/` 目录。
-> **v3.2: 吸收 fainir file-handoff + GPT Researcher Merge Agent + Magentic task ledger**
+> 8-Agent File-based Handoff Pipeline + IMA Publish。不再通过 task 参数传递数据——Agent 读写 `artifacts/` 目录。
+> **v3.3: 嵌入 solo-file-transfer (Phase 6) + 复盘改进**
 
 ## ⚡ Solo Status 协议（强制）
 
@@ -72,8 +72,56 @@ Phase 3: Draft (sessions_spawn)
 Phase 4: Review (sessions_spawn) ⚠️ 独立审计
   └─ Agent 4 → 读 artifacts/merge.json + draft_report.md → 写 artifacts/review_ledger.json
 
+  📊 评分矩阵（8维·基于 Google Code Review 指南 + Conventional Comments + Evidence Grading）
+
+  | # | 维度 | 权重 | GitHub 来源 | 检查内容 |
+  |:-:|:-----|:----:|:-----------|:--------|
+  | 1 | 研究设计合理性 | 15% | Google CR: Design | 调研框架是否合理？假设是否显式化？搜索策略是否有覆盖度？ |
+  | 2 | **事实准确性** | 20% | Google CR: Functionality | 关键事实是否多源交叉验证？数据是否准确？结论是否从证据推导？ |
+  | 3 | 信息密度与清晰度 | 10% | Google CR: Complexity+Naming | 报告是否清晰可读？术语是否准确？是否有无关冗余？ |
+  | 4 | 可证伪性 | 10% | Google CR: Tests | 关键结论是否可被验证/证伪？反对意见是否处理？局限性是否声明？ |
+  | 5 | **来源可追溯** | 20% | Google CR: Comments + ConvCom | 每条关键claim有来源标注？有 [UNSOURCED] 标记？质量分级(S1/S2/S3)合理？ |
+  | 6 | 偏误控制 | 10% | Google CR: Style + Evidence | 是否检查了确认偏误/选择偏误/幸存者偏误？多源是否有对立视角？ |
+  | 7 | 知识缺口扫描 | 5% | Google CR: Documentation | 是否诚实地标注了"不知道"的部分？缺口是否量化？ |
+  | 8 | 创新洞察力 | 10% | ConvCom: praise + DR专属 | 报告是否有超越信息汇总的洞察？有"这对用户意味着什么"的价值判断？ |
+  | **合计** | **100%** | | |
+
+  **Conventional Comments 标签映射（审查意见分级）：**
+  - issue (blocking) → must_fix（不修复则 REJECT）
+  - issue (non-blocking) → P1 fix
+  - suggestion → P2 improvement
+  - nitpick → P3 nice-to-have
+  - praise → strengths
+  - question → 需要澄清的疑点
+
+  **权重设计逻辑：**
+  - 事实准确性(20%)+来源可追溯(20%)=40% — 深度调研的根基：事实要准、来源要可查
+  - 研究设计合理性(15%)+偏误控制(10%)+可证伪性(10%)=35% — 方法论质量：怎么调研的、有没有偏见、能不能推翻
+  - 信息密度(10%)+洞察力(10%)+缺口扫描(5%)=25% — 交付质量：好不好读、有没有深度、是否诚实
+
+  **降档规则（根基维度·独立于总分）：**
+  - 事实准确性 < 40 → 强制 REVISE（事实不准则报告不可用）
+  - 来源可追溯 < 30 → 强制 REVISE（来源不明则无法验证）
+  - 研究设计 < 30 → 强制 REVISE（方法不对则结论无效）
+
+  **与 DI/MSF 评分矩阵的核心差异：**
+  | 技能 | 维度来源 | 最高权重 | 场景 |
+  |:-----|:--------|:--------|:-----|
+  | DI ⚔️ | 二十四字方针 6维 | 定性准确 25% | 纪检案件，法规准确性优先 |
+  | MSF ⚒️ | 民政部5A + GitHub 9维 | 证据质量 20% | 学会调研，信息可复现性优先 |
+  | DR 🔍 | Google CR 8维 | 事实准确性+来源可追溯 各20% | 深度调研，事实可靠性优先 |
+
 Phase 5: Revise (sessions_spawn)
   └─ Agent 5 → 读 artifacts/draft_report.md + review_ledger.json → 写 artifacts/final_report.md + revision_log.json
+
+Phase 6: Publish (主会话直调) ← 🆕 v3.3
+  └─ 若用户指定了IMA知识库 → 调用 solo-file-transfer 技能
+     node skills/solo/scripts/ima-upload.cjs artifacts/final_report.md <KB_ID>
+
+  ⛔ 报告纯净原则：上传 IMA 的报告必须是纯分析内容。
+     禁止：审计声明 JSON / Agent 统计 / SOURCED/UNSOURCED 计数 / handoff 状态 / Review 台账
+     允许：标题、日期、执行摘要、分析正文、来源引用（可附条款号+原文）
+     上述元数据均在 artifacts/ 目录已有独立文件，无需在报告中重复。
 ```
 
 ## File-based Handoff 协议
@@ -99,6 +147,12 @@ artifacts/
   ├── final_report.md    ← Agent 5 最终输出
   └── revision_log.json  ← Agent 5 修订日志
 ```
+
+**Phase 6 KB_ID 映射（公司分析相关）：**
+```
+公司分析: rOmwQPa9EIuGwZ-5oN93qPsZjJTViyawEUPyd1aYzvE=
+```
+其他KB_ID见 MEMORY.md → IMA知识库段。
 
 **handoff.md 格式：**
 ```markdown
@@ -134,11 +188,17 @@ artifacts/
   ├─ Gate: score ≥ 80 → 交付
   │        score < 80 → Phase 5
   │
-  └─ Phase 5: spawn Agent 5 (revise)
-        读 draft_report.md + review_ledger.json → 写 artifacts/final_report.md
+  ├─ Phase 5: spawn Agent 5 (revise)
+  │     读 draft_report.md + review_ledger.json → 写 artifacts/final_report.md
+  │
+  ├─ Phase 6: 主会话调用 solo-file-transfer (v3.3 🆕)
+  │     若用户指定了IMA知识库 → node skills/solo/scripts/ima-upload.cjs artifacts/final_report.md <KB_ID>
+  └─ 完成 → 主会话输出摘要（自动路由到当前通道，无需调 wecom_mcp）
 ```
 
 **主会话不传递数据——只做 spawn + gate 检查。**
+
+> ⛔ **推送规则：** 隔离 session 只产出，不推送。交付消息由 cron/framework 的 delivery.announce 自动路由。主会话的回复自动路由到用户通道，无需调 wecom_mcp。
 
 ## 子代理文件
 
@@ -156,16 +216,26 @@ artifacts/
 
 ## 与 v3.1 的关键差异
 
-| 维度 | v3.1 | v3.2 |
-|:-----|:-----|:-----|
-| 数据传递 | task 参数手写摘要 | `artifacts/` 文件读写 |
-| 合并 | 主会话手工 | **Agent 1d Merge** 自动去重评分 |
-| 管线状态 | 无 | `handoff.md` + `status.md` |
-| 信息损失 | 严重（三次摘要转述） | 零损失（文件原始 JSON） |
-| 恢复能力 | 无（失败后从头来） | 读取 handoff.md + 续传 |
-| Agent 数量 | 7 | **8** (+Merge) |
+| 维度 | v3.1 | v3.2 | v3.3 |
+|:-----|:-----|:-----|:-----|
+| 数据传递 | task 参数手写摘要 | `artifacts/` 文件读写 | 同v3.2 |
+| 合并 | 主会话手工 | **Agent 1d Merge** 自动去重评分 | 同v3.2 |
+| 管线状态 | 无 | `handoff.md` + `status.md` | 同v3.2 |
+| 信息损失 | 严重（三次摘要转述） | 零损失（文件原始 JSON） | 同v3.2 |
+| 交付 | 手动复制到聊天窗口 | 手动复制 | **🆕 Phase 6: ima-upload** 自动上传IMA |
+| 恢复能力 | 无（失败后从头来） | 读取 handoff.md + 续传 | 同v3.2 |
+| Agent 数量 | 7 | **8** (+Merge) | **8** (+IMA技能复用) |
+| 阶段数 | 5 | **6** | **7** (+Publish) |
 
 ## LEARNED PATTERNS
+
+### v3.3: IMA Upload 融入管线 + 复盘改进 (2026-05-27)
+来源：华润三九DR全链路复盘（IMA上传手动调试40min → 零）
+改动：
+- DR SKILL.md → v3.3。新增 Phase 6: Publish（调用 solo-file-transfer 技能）
+- 管线从6阶段升级为7阶段（Scout→Merge→Analyze→Draft→Review→Revise→Publish）
+- 新增KB_ID映射表（公司分析 rOmwQPa9…）
+- 核心教训：子任务（如"发ima"）必须重新匹配技能，不能只用入口匹配的DR技能
 
 ### v4.0: babata-browser v4.0 — Persistent Login + 学术搜索首选 (2026-05-24)
 来源：CNKI反爬全链路实战（石冰提供中山大学登录cookie）

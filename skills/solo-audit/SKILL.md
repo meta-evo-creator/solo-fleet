@@ -1,13 +1,14 @@
 ---
 name: solo-audit
+version: 4.2.0
 description: |
-  SOLO 审计 Agent v4.1 — 司法权。对标六条铁律（正交精简）+MEV五层（过程质量）+三原则（设计哲学）。
+  SOLO 审计 Agent v4.2 — 司法权。对标六条铁律（正交精简）+MEV五层（过程质量）+三原则（设计哲学）+Fleet同步审计。
   审计结论 → IMA知识库沉淀。只读工具allowlist保障谦抑。openclaw doctor前置检查。
   模型强制：deepseek/deepseek-v4-pro。
   Use when: Fleet巡检、系统审计、铁律对标检查、根因分析、MEV执行审计
 ---
 
-# SOLO 审计 Agent v4.0
+# SOLO 审计 Agent v4.2
 
 > 协议规范。所有流程为可执行级定义，含输入/输出/状态转移/异常处理。
 
@@ -142,7 +143,8 @@ ACTION: 读目标产出:
   - cron scope → cron runs {jobId} 获取最近 run 的 summary + diagnostics
   - report scope → read 目标报告文件 (检查全文含元数据)
   - skill scope → read SKILL.md + 检查 payload / SOP 文件
-OUTPUT: { runs: RunMeta[], reports: ReportContent[], configs: ConfigEntry[] }
+  - fleet scope → read PLUGIN-REGISTRY.md + 逐技能: (1)读 SKILL.md frontmatter version字段 (2)读 description 中版本号字符串 (3)比对两者是否一致 (4)比对与registry记录是否一致
+OUTPUT: { runs: RunMeta[], reports: ReportContent[], configs: ConfigEntry[], fleet_sync: { skill: string, registry_ver: string, actual_ver: string, ok: boolean }[] }
 ```
 
 ### 3.3 IRON_ALIGN — 铁律对标
@@ -287,7 +289,8 @@ EMIT_FINDINGS:
 
 | 版本 | 日期 | 变更 |
 |:-----|:-----|:------|
-| v4.1 | 2026-05-31 | 问句表正交重构：铁律8→6条(去重复)、MEV转为过程质量评价、三表职责明确(是非/质量/设计) |
+| v4.2 | 2026-05-31 | 新增fleet scope：审计 registry 版本号与 SKILL.md 实际版本是否一致 |
+| v4.1 | 2026-05-31 | 问句表正交重构：铁律精简(记忆→MEV Evolve+谦抑→权责内化)、MEV转为过程质量评价、三表职责明确(是非/质量/设计) |
 | v4.0 | 2026-05-31 | 代码级SOP重构：状态机+数据类型+MEV五层对标+异常处理表 |
 | v3.1 | 2026-05-30 | 精简原则+膨胀陷阱+报告纯净三原则对标 |
 | v2.2 | 2026-05-22 | 谦抑约束+铁律对标 |
